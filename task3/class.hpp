@@ -32,9 +32,7 @@ namespace st {
 
 		bool operator>(const String& other);
 
-		char& operator[](const size_t index);
-
-		const char& operator[](const size_t index) const;
+		char operator[](int index);
 
 		friend std::ostream& operator<<(std::ostream& out, const String& other);
 		friend std::istream& operator>>(std::istream& in, String& other);

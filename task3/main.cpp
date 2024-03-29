@@ -18,11 +18,11 @@ int main() {
 
 	std::cout << (s1 > s3) << '\n';
 
-	std::cout << s4[3] << '\n';
+	std::cout << s3[3] << '\n';
 
 	s4.at(3, '7');
 
-	std::cout << s4.at(3) << '\n';
+	s4.at(3);
 
 	std::cout << s4 << '\n';
 

@@ -47,13 +47,7 @@ namespace lt {
 	}
 
 	MyLongInt& MyLongInt::operator+=(MyLongInt& other) {
-		bool swapped = false;
-		MyLongInt blank;
-		if (len_ < other.len_ || ((len_ == other.len_) && (num_[len_ - 1] < other.num_[len_ - 1]))) {
-			blank = other;
-			swap(other);
-			swapped = true;
-		}
+		if (len_ < other.len_) swap(other);
 		int ln = len_, nxt = 0;
 		for (int i = 0; i < ln; i++) {
 			if (is_negative_ != other.is_negative_)
@@ -76,13 +70,12 @@ namespace lt {
 			len_++;
 			num_[len_ - 1] = 1;
 		}
-		if (num_[len_ - 1] == 0 && len_ > 1)
+		if (num_[len_ - 1] == 0)
 			len_--;
 		if (num_[len_ - 1] < 0) {
 			num_[len_ - 1] = abs(num_[len_ - 1]);
 			is_negative_ = true;
 		}
-		if (swapped) other = blank;
 		return *this;
 	}
 
@@ -93,15 +86,8 @@ namespace lt {
 	}
 
 	MyLongInt MyLongInt::operator*=(MyLongInt& other) {
-		bool swapped = false;
-		MyLongInt blank;
-		if (len_ < other.len_) {
-			MyLongInt blank;
-			blank = other;
-			swap(other);
-			swapped = true;
-		}
-		int n[30] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		if (len_ < other.len_) swap(other);
+		int n[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 		for (int i = 0; i < len_; i++) {
 			for (int j = 0; j < other.len_; j++) {
 				n[i] += num_[i] * other.num_[j] * pow(pow(10, SEG_), j);
@@ -117,11 +103,10 @@ namespace lt {
 				i++;
 			len_ = i;
 		}
-		for (int i = 0; i < len_; i++)
+		for(int i = 0; i < len_; i++)
 			num_[i] = n[i];
 		if (is_negative_ != other.is_negative_) is_negative_ = true;
 		else is_negative_ = false;
-		if (swapped) other = blank;
 		return *this;
 	}
 
@@ -129,58 +114,6 @@ namespace lt {
 		MyLongInt blank = *this;
 		blank *= other;
 		return blank;
-	}
-
-	bool MyLongInt::operator==(const MyLongInt& other) {
-		if (is_negative_ != other.is_negative_ || len_ != other.len_)
-			return false;
-		for (int i = 0; i < len_; i++) {
-			if (num_[i] != other.num_[i])
-				return false;
-		}
-		return true;
-	}
-
-	bool MyLongInt::operator!=(const MyLongInt& other) {
-		if (is_negative_ != other.is_negative_ || len_ != other.len_)
-			return true;
-		for (int i = 0; i < len_; i++) {
-			if (num_[i] != other.num_[i])
-				return true;
-		}
-		return false;
-	}
-
-	bool MyLongInt::operator<(const MyLongInt& other) {
-		if (is_negative_ != other.is_negative_) {
-			if (is_negative_) return true;
-			else return false;
-		}
-		if (len_ < other.len_) return true;
-		else if (len_ > other.len_) return false;
-		else {
-			for (int i = len_ - 1; i >= 0; i--) {
-				if (num_[i] < other.num_[i]) return true;
-				else if (num_[i] > other.num_[i]) return false;
-			}
-			return false;
-		}
-	}
-
-	bool MyLongInt::operator>(const MyLongInt& other) {
-		if (is_negative_ != other.is_negative_) {
-			if (is_negative_) return false;
-			else return true;
-		}
-		if (len_ > other.len_) return true;
-		else if (len_ < other.len_) return false;
-		else {
-			for (int i = len_ - 1; i >= 0; i--) {
-				if (num_[i] > other.num_[i]) return true;
-				else if (num_[i] < other.num_[i]) return false;
-			}
-			return false;
-		}
 	}
 
 	void MyLongInt::swap(MyLongInt& other) {
@@ -218,23 +151,23 @@ namespace lt {
 		return out;
 	}
 
-	int to_int(char c) {
-		if (c == '0') return 0;
-		if (c == '1') return 1;
-		if (c == '2') return 2;
-		if (c == '3') return 3;
-		if (c == '4') return 4;
-		if (c == '5') return 5;
-		if (c == '6') return 6;
-		if (c == '7') return 7;
-		if (c == '8') return 8;
-		if (c == '9') return 9;
+	int to_int (char c) {
+			if (c == '0') return 0;
+			if (c == '1') return 1;
+			if (c == '2') return 2;
+			if (c == '3') return 3;
+			if (c == '4') return 4;
+			if (c == '5') return 5;
+			if (c == '6') return 6;
+			if (c == '7') return 7;
+			if (c == '8') return 8;
+			if (c == '9') return 9;
 	}
 
 	int dg_c(int x) {
 		int c = 1;
 		while (x >= 10) {
-			c++;
+			c ++;
 			x /= 10;
 		}
 		return c;
@@ -242,3 +175,4 @@ namespace lt {
 
 }
 
+	

@@ -3,8 +3,13 @@
 
 
 int main() {
-	lt::MyLongInt a, b;
-	std::cin >> a >> b;
-	std::cout << "a:    " << a << "     b:    " << b << "\na == b:    " << (a == b) << "\na != b:    " << (a != b) << "\na < b:    " << (a < b) << "\na * b:    " << (a * b) << "\na + b:    " << (a + b) << '\n';
+	lt::MyLongInt a("-1001");
+	lt::MyLongInt b = "296";
+	lt::MyLongInt c, d;
+	std::cin >> b;
+	std::cout << a << ' ' << b << '\n';
+	c = a + b;
+	d = a * b;
+	std::cout << c << ' ' << d << '\n';
 	return 0;
 }

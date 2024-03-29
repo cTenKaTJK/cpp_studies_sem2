@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 
-set(PROJECT_NAME task_7_cmake)
+set(PROJECT_NAME task_10)
 project("${PROJECT_NAME}")
 
 

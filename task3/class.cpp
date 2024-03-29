@@ -25,8 +25,10 @@ namespace st {
 	}
 
 	String& String::operator=(const String& other) {
+		//swap(other);
 		len_ = other.len_;
 		str_ = other.str_;
+		std::cout << "||--->|| this: " << len_ << " other: " << other.len_ << '\n';
 		return *this;
 	}
 
@@ -42,8 +44,10 @@ namespace st {
 	}
 
 	String String::operator+(const String& other) {
+		std::cout << "||--->|| this: " << len_;
 		String blank(str_);
 		blank += other;
+		std::cout << " other: " << other.len_ << '\n';
 		return blank;
 	}
 
@@ -91,14 +95,10 @@ namespace st {
 		}
 	}
 
-	const char& String::operator[](const size_t index) const {
-		if (index <= len_)
-			return str_[index];
-	}
-
-	char& String::operator[](const size_t index) {
-		if (index <= len_)
-			return str_[index];
+	char String::operator[](int index) {
+		if (index > len_)
+			return NULL;
+		return str_[index];
 	}
 
 	void String::swap(String& other) {
