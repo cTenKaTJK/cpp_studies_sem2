@@ -2,15 +2,28 @@
 #include"matrix.hpp"
 
 
-//	дописать *= на матрицу и число, пофиксить прикол с выводом результатов умножени и реализовать определитель
 int main() {
-	mtr::Matrix<int, 3, 2> a;
+
+	mtr::Matrix<int, 2, 2> a;
+	mtr::Matrix<int, 2, 2> b;
+
 	std::cin >> a;
-	mtr::Matrix<int, 2, 3> b;
 	std::cin >> b;
-	std::cout << a;
-	std::cout << b;
-	mtr::Matrix<int, 3, 3> c = a * b;
-	std::cout << c;
+
+	std::cout << "initial matrixes\n" << a << b;
+
+	a *= -1;
+	b *= 2;
+
+	std::cout << "new matrixres\n" << a << b;
+
+	std::cout << "1`st matrix det\n" << a.det() << std::endl;
+	std::cout << "2`nd matrix det\n" << b.det() << "\n--------------------" << std::endl;
+
+	std::cout << "addition result\n" << a + b;
+	std::cout << "multiplication result\n" << a * b;
+
+
 	return 0;
+
 }

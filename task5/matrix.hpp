@@ -49,9 +49,10 @@ namespace mtr {
 		Matrix& operator+ (Matrix& other) {
 			Matrix tmp = *this;
 			tmp += other;
-			return tmp;
+			*this = tmp;
+			return *this;
 		}
-		Matrix& operator*= (T& item) {
+		Matrix& operator*= (T item) {
 			for (size_t i = 0; i < R; i++) {
 				for (size_t j = 0; j < C; j++)
 					matr_[i][j] *= item;
@@ -59,10 +60,11 @@ namespace mtr {
 			return *this;
 		}
 		
-		Matrix& operator* (T& item) {
+		Matrix& operator* (T item) {
 			Matrix tmp = *this;
 			tmp *= item;
-			return tmp;
+			*this = tmp;
+			return *this;
 		}
 
 		template<size_t other_C>
@@ -76,12 +78,42 @@ namespace mtr {
 					ans(row, sec_col) = cell_val;
 				}
 			}
-			return ans;
+			*this = ans;
+			return *this;
 		}
 
-		template<size_t other_C>
-		Matrix<T, R, other_C>& operator*= (Matrix<T, C, other_C>& other) {
-			//code
+		Matrix<T, R, R>& operator*= (Matrix<T, R, R>& other) {
+			if (R == C) {
+				Matrix<T, R, R> ans;
+				ans = *this * other;
+				*this = ans;
+				return *this;
+			}
+			else {
+				throw std::length_error("non-multipy object type (rows != cols)\n");
+			}
+		}
+
+		T det() {
+			if (R == C) {
+
+				if (R == 1)
+					return matr_[0][0];
+
+				else if (R == 2)
+					return matr_[0][0] * matr_[1][1] - matr_[0][1] * matr_[1][0];
+
+				else if (R == 3)
+					return matr_[0][0] * matr_[1][1] * matr_[2][2] + matr_[0][1] * matr_[1][2] * matr_[2][0]
+					+ matr_[0][2] * matr_[1][0] * matr_[2][1] - matr_[0][0] * matr_[1][2] * matr_[2][1]
+					- matr_[0][1] * matr_[1][0] * matr_[2][2] - matr_[0][2] * matr_[1][1] * matr_[2][0];
+
+				else
+					throw std::length_error("non-det object type (dim > 3)\n");
+			}
+			else {
+				throw std::length_error("non-det object type (rows != cols)\n");
+			}
 		}
 
 		void operator++ ();
