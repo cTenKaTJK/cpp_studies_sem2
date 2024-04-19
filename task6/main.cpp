@@ -53,11 +53,11 @@ namespace vec {
 			for(size_t i = 0; i < len_; i++) {
 				if (i < index)
 					slice1.pushback(tmp[i]);
-				else if (i > index)
+				else if (i > index) {
+					slice1.pushback(false);
 					slice2.pushback(tmp[i]);
+				}
 			}
-			for (size_t i = 0; i < (len_ - index - 1); i++)
-				slice1.pushback(false);
 			data_ = slice1.data_ | slice2.data_;
 			len_--;
 		}
