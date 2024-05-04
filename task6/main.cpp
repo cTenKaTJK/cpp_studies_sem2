@@ -26,8 +26,8 @@ namespace vec {
 		public:
 			bitptr(char* ptr, size_t index, size_t len) {
 				ptr_ = ptr;
-				move_ = (index >= (len - (len % 8)) ? 7 - (index % 8) - (8 - len % 8) : 7 - index % 8);
-			}
+				// сдвиг уменьшается, если не заполнены все 8 бит
+				move_ = (index >= (len - (len % 8)) ? 7 - (index % 8) - (8 - len % 8) : 7 - index % 8);	}
 
 			bitptr& operator=(bool b) {
 				if (b)
@@ -89,6 +89,7 @@ namespace vec {
 			len_++;
 		}
 
+		// "расширение" массива при заполнении очередного байта
 		void extend() {
 			cell_++;
 			char* tmp = new char[cell_ + 1];
@@ -113,6 +114,7 @@ namespace vec {
 		void erase(size_t index) {
 			vector tmp = *this;
 
+			// удаляемый бит помещается в начало последнего байта и не читается из-за уменьшения длины массива
 			if (len_ % 8 == 0 && len_ > 8) {
 				for (size_t i = index; i < (8 * cell_); i++) {
 					bool blank = tmp[i];
@@ -121,6 +123,7 @@ namespace vec {
 				}
 			}
 			else {
+				// удаляемый бит перемещается в последний байт (если этих байт несколько)
 				if (cell_ > 0 && (index < (8 * (cell_)))) {
 					for (size_t i = index; i < (8 * cell_); i++) {
 						bool blank = tmp[i];
@@ -129,6 +132,8 @@ namespace vec {
 					}
 				}
 
+				// удаляемый бит перемещается на место первого читаемого и при уменьшении длины становится нечитаемым
+				// 000011|0|1 & len = 4 : 1101    ->	0000|0|111 & len = 4 : 0111    ->	 0000|0|111 & len = 3 : 111
 				for (size_t i = index; i > (8 * cell_); i--) {
 					bool blank = tmp[i];
 					tmp[i] = bool(tmp[i - 1]);
@@ -144,18 +149,17 @@ namespace vec {
 
 			tmp.pushback(value);
 
+			// смещаем добавленный в конец бит до нужного места
 			for (size_t i = len_; i > index; i--) {
 				bool blank = tmp[i];
 				tmp[i] = bool(tmp[i - 1]);
 				tmp[i - 1] = blank;
 			}
-
 			*this = tmp;
 		}
 
 		friend std::ostream& operator<<(std::ostream& out, vector<bool>& item);
 	};
-
 
 	std::ostream& operator<<(std::ostream& out, vector<bool>& item) {
 		for (size_t i = 0; i < item.size(); i++) {
