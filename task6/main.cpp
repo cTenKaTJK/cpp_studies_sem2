@@ -1,7 +1,5 @@
 #include<iostream>
-#include<bitset>
 #include<cstring>
-#include<cmath>
 
 
 namespace vec {
@@ -17,7 +15,7 @@ namespace vec {
 		size_t len_;
 		size_t cell_;
 
-		// подкласс укзателя на бит в байте
+		// подкласс указателя на бит в байте
 		class bitptr {
 		private:
 			char* ptr_;
