@@ -1,11 +1,10 @@
 ﻿#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 #include <iostream>
 
 
-#define GRAVITY 1.8
-#define N 0.35
-#define COUNT 5
+#define GRAVITY 4
+#define N 0.25  // коэффициент уприугости "поверхности" нижней части экрана
+#define COUNT 5 // число создаваемых шаров
 #define SPAN 40
 #define HEIGHT 600
 #define WIDTH 800
@@ -62,9 +61,9 @@ public:
 
     sf::CircleShape shape() { return shape_; }
 
-    void lock() { falling_ = false; }
+    void lock() { falling_ = false; }   // фиксирует шар
 
-    void unlock() { falling_ = true; }
+    void unlock() { falling_ = true; }  // убирет фиксацию с шара, позволяя ему упасть
 
     void up() {
         speed_ -= GRAVITY;
@@ -77,17 +76,15 @@ public:
         y_ += speed_;
         shape_.setPosition(x_, y_);
     }
-
-    void bounce() {
+    
+    void change_direction() {
         if (direction_ == Direction::DOWN)
             direction_ = Direction::UP;
-    }
-
-    void fall() {
-        if (direction_ == Direction::UP)
+        else if (direction_ == Direction::UP)
             direction_ = Direction::DOWN;
     }
 
+    // метод изменяющий значение полей класса шара каждый кадр (если шар не зафиксирован)
     void frame() {
         if (falling_) {
             if (direction_ == Direction::DOWN)
@@ -96,15 +93,18 @@ public:
             else if (direction_ == Direction::UP)
                 up();
 
+            // при затухании отскоков от низа экрана
             if ((y_ >= HEIGHT - radius_ * 2) && (speed_ <= 0.5)) {
                 lock();
             }
 
-            else if (y_ >= HEIGHT - radius_ * 2)
-                bounce();
+            // при достижении низа экрана при падении
+            else if (y_ >= HEIGHT - radius_ * 2 && direction_ == Direction::DOWN)
+                change_direction();
 
-            if (speed_ <= 0)
-                fall();
+            // при достижении своей верхней точки при отскоке
+            else if (speed_ <= 0 && direction_ == Direction::UP)
+                change_direction();
         }
     }
 };
@@ -112,11 +112,13 @@ public:
 
 int main()
 {
+    // окно
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Blip-Blop");
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
     window.setKeyRepeatEnabled(false);
 
+    // текст
     sf::Font font;
     if (!font.loadFromFile("./src/font.ttf"))
         return -1;
@@ -125,6 +127,7 @@ int main()
     text.setFillColor(sf::Color::Magenta);
     text.setPosition(164, 32);
 
+    // создание пяти случайных шаров
     MovingCircle* cycls = new MovingCircle[COUNT];
     for (short i = 0; i < COUNT; i++) {
         unsigned radius = 8 + rand() % 32;
@@ -148,7 +151,7 @@ int main()
                     window.close();
                     break;
 
-                case sf::Event::KeyPressed:
+                case sf::Event::KeyPressed:    // при нажатии любой клавиши все шары приходят в движение
                     for (short i = 0; i < COUNT; i++) cycls[i].unlock();
 
                 default:
