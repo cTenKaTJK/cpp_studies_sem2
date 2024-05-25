@@ -29,22 +29,22 @@ public:
 			buf[i] = m_data[i];
 	}
 
-	void GetBigData(float* buf, uint8_t& n) {
+	void GetBigData(float* buf, unsigned int& n) {
 		n = m_n;
-		std::cout << (int)n << '\n';
-		for (short i = 0; i < n; i++) {
+		for (unsigned i = 0; i < n; i++) {
 			uint32_t item = m_data[i];
+			//std::cout << std::bitset<32>(item).to_string() << ' ' << std::bitset<8>(m_data[i]).to_string() << '\n';
 
-			for (short j = 0; j < 4; j++) {
+			for (short j = 1; j < 4; j++) {
 				item = item << 8;
 				item = item | m_data[4 * i + j];
-				std::cout << std::bitset<32>(item).to_string() << ' ' << std::bitset<8>(m_data[4 * i + j]).to_string() << '\n';
+				//std::cout << std::bitset<32>(item).to_string() << ' ' << std::bitset<8>(m_data[4 * i + j]).to_string() << '\n';
 			}
-			//std::cout << std::bitset<32>(item).to_string() << '\n';
-			//memcpy(&buf[i], &item, 4);
-			buf[i] = item;
-			std::cout << std::bitset<32>(buf[i]).to_string() << '\n';
-			std::cout << "-------------\n";
+
+			memcpy(&buf[i], &item, sizeof(float));
+
+			//std::cout << std::bitset<32>(*(uint32_t*)(&buf[i])).to_string() << ' ' << buf[i] << '\n';
+			//std::cout << "-------------\n";
 		}
 	}
 
@@ -94,7 +94,7 @@ public:
 	}
 
 	bool Open() override {
-		m_in.open(m_filename, std::ios::binary);
+		m_in.open(m_filename, std::ios::binary | std::ios::in);
 		if (!m_in.is_open())
 			return false;
 		return true;
@@ -124,20 +124,36 @@ std::unique_ptr<DataReader> Factory(const std::string& filename)
 }
 
 void fill_file(const std::string& filename) {
+	const unsigned int n = 3;
+	float buf[n] = { 3.14f, 10.05f, 18.901f };
+
+
 	std::fstream file(filename, std::ios::out | std::ios::binary);
-	const uint8_t n = 3;
-
-	float buff[n] = { 3.14f, 4.55f, 56.123f };
-
 	file.write((char*)&n, 1);
-	file.write((char*)buff, n);
 
+	for (unsigned i = 0; i < n; i++) {
+		uint8_t* a = new uint8_t[4];
+		uint32_t b = *(uint32_t*)(&buf[i]);
+
+		for (short i = 0; i < 4; i++) {
+			a[4 - i - 1] = b;
+			b = b >> 8;
+		}
+
+		//for (short i = 0; i < 4; i++)
+			//std::cout << std::bitset<8>(a[i]).to_string() << std::endl;
+		//std::cout << "---\n";
+		file.write((char*)a, 4);
+
+		delete[] a;
+	}
+	std::cout << std::endl;
 	file.close();
 }
 
 int main() {
 
-	uint8_t n;
+	unsigned int n;
 	float buf[20];
 
 	fill_file("./files/input.bin");
@@ -152,8 +168,8 @@ int main() {
 	Reader->GetBigData(buf, n);
 
 	std::cout << (int)n << std::endl;
-	for (short i = 0; i < n; i++)
-		std::cout << buf[i] << std::endl;
+	for (unsigned i = 0; i < n; i++)
+		std::cout << std::bitset<32>(*(uint32_t*)(&buf[i])).to_string() << ' ' << buf[i] << std::endl;
 
 	return 0;
 }
