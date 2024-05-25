@@ -1,14 +1,19 @@
-﻿#include <SFML/Graphics.hpp>
+#define _USE_MATH_DEFINES
+
+#include <cmath>
+#include <SFML/Graphics.hpp>
 #include <iostream>
+#include <ctime>
 
 
-#define GRAVITY 4
-#define N 0.25  // коэффициент уприугости "поверхности" нижней части экрана
+#define GRAVITY 3.5
+#define N 0.25  // коэффициент упругости "поверхности" нижней части экрана
 #define COUNT 5 // число создаваемых шаров
 #define SPAN 40
 #define HEIGHT 600
 #define WIDTH 800
 #define RADIUS 16
+#define AIR 0.00000001  // "плотность" воздуха
 
 
 enum class Direction {UP, DOWN};
@@ -18,10 +23,11 @@ class MovingCircle
 private:
     sf::CircleShape shape_;
     Direction direction_;
-    float speed_;
+    double speed_;
     int x_, y_;
     unsigned radius_;
     bool falling_;
+    double air_res_;
 
 public:
     MovingCircle() {
@@ -31,6 +37,7 @@ public:
         radius_ = RADIUS;
         x_ = SPAN;
         y_ = SPAN;
+        air_res_ = 1 - (4 * M_PI * pow(radius_, 2) * AIR);
         shape_.setFillColor(sf::Color::Magenta);
         shape_.setPosition(x_, y_);
         shape_.setRadius(RADIUS);
@@ -41,6 +48,7 @@ public:
         falling_ = false;
         radius_ = radius;
         direction_ = Direction::DOWN;
+        air_res_ = 1 - (4 / 3 * M_PI * pow(radius_, 3) * AIR);  // сопротивление воздуха исходя из объема шара
         x_ = x;
         y_ = y;
         shape_.setFillColor(color);
@@ -105,6 +113,7 @@ public:
             // при достижении своей верхней точки при отскоке
             else if (speed_ <= 0 && direction_ == Direction::UP)
                 change_direction();
+            speed_ *= air_res_;
         }
     }
 };
@@ -112,6 +121,7 @@ public:
 
 int main()
 {
+    srand(time(0));
     // окно
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Blip-Blop");
     window.setFramerateLimit(60);
@@ -131,7 +141,7 @@ int main()
     MovingCircle* cycls = new MovingCircle[COUNT];
     for (short i = 0; i < COUNT; i++) {
         unsigned radius = 8 + rand() % 32;
-        int x = (1 + rand() % 19) * SPAN;
+        int x = (1 + rand() % 18) * SPAN;
         int y = radius + rand() % 200;
         uint8_t color_r = 100 + rand() % 155;
         uint8_t color_g = 100 + rand() % 155;
