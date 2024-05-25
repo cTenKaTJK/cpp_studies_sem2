@@ -1,9 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-#include<bitset>
-#include<cstring>
-
 class DataReader
 {
 protected:
@@ -31,21 +28,7 @@ public:
 
 	void GetBigData(float* buf, unsigned int& n) {
 		n = m_n;
-		for (unsigned i = 0; i < n; i++) {
-			uint32_t item = m_data[i];
-			//std::cout << std::bitset<32>(item).to_string() << ' ' << std::bitset<8>(m_data[i]).to_string() << '\n';
-
-			for (short j = 1; j < 4; j++) {
-				item = item << 8;
-				item = item | m_data[4 * i + j];
-				//std::cout << std::bitset<32>(item).to_string() << ' ' << std::bitset<8>(m_data[4 * i + j]).to_string() << '\n';
-			}
-
-			memcpy(&buf[i], &item, sizeof(float));
-
-			//std::cout << std::bitset<32>(*(uint32_t*)(&buf[i])).to_string() << ' ' << buf[i] << '\n';
-			//std::cout << "-------------\n";
-		}
+		memcpy(buf, m_data, 4 * n);
 	}
 
 };
@@ -127,27 +110,9 @@ void fill_file(const std::string& filename) {
 	const unsigned int n = 3;
 	float buf[n] = { 3.14f, 10.05f, 18.901f };
 
-
 	std::fstream file(filename, std::ios::out | std::ios::binary);
 	file.write((char*)&n, 1);
-
-	for (unsigned i = 0; i < n; i++) {
-		uint8_t* a = new uint8_t[4];
-		uint32_t b = *(uint32_t*)(&buf[i]);
-
-		for (short i = 0; i < 4; i++) {
-			a[4 - i - 1] = b;
-			b = b >> 8;
-		}
-
-		//for (short i = 0; i < 4; i++)
-			//std::cout << std::bitset<8>(a[i]).to_string() << std::endl;
-		//std::cout << "---\n";
-		file.write((char*)a, 4);
-
-		delete[] a;
-	}
-	std::cout << std::endl;
+	file.write((char*)a, 4 * n);
 	file.close();
 }
 
